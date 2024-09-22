@@ -1,0 +1,8 @@
+__pycache__/
+venv/
+logs/
+
+*.pyc
+*.ini
+*.log
+*.db
