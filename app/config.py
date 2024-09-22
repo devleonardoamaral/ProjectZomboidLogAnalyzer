@@ -18,7 +18,7 @@ database={app_path}/database.db
 reading_frequency=1
 expiration_time=10
 [pattern]
-default=^\[(\d{2}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\](.+)\.$
+default=^\[(\d{2}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\](.+)\.?$
 """
 
 class Config:

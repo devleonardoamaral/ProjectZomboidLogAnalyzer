@@ -175,7 +175,7 @@ class Reader:
                         with open(reader_row[3], 'rb') as f:
                             f.seek(reader_row[6])
                             line_bin = f.readline()
-                            line_string = line_bin.decode(encoding='utf-8', errors='ignore').strip()
+                            line_string = line_bin.decode(encoding='utf-8', errors='ignore')
 
                     except FileNotFoundError:
                         logger.error(f"File not found: {reader_row[3]}")
@@ -185,8 +185,8 @@ class Reader:
                         continue
 
                     if line_bin and line_string:
-                        
-                        logger.info(f'Reading {reader_row[2]}, pos: {reader_row[6]}/{reader_row[5]}, line: {line_string[:10]}{'...' if len(line_string) > 10 else ''}')
+                        line_string = line_string.strip()               
+                        logger.info(f'Reading {reader_row[2]}, pos: {reader_row[6]}/{reader_row[5]}, line: {line_string}')
 
                         try:
                             regex_list = json.loads(str(reader_row[4]))
@@ -199,6 +199,7 @@ class Reader:
                             'UPDATE readers SET cursor_position = ? WHERE id = ?',
                             (new_position, reader_row[0])
                         )
+                        conn.commit()
 
                         match_found = False  # Adicionado para rastrear se uma correspondência foi encontrada
 
@@ -236,7 +237,7 @@ class Reader:
                             pattern_id = pattern_id + 1
 
                         if not match_found:
-                            logger.debug(f"No match found for line: {line_string}")
+                            logger.error(f"No match found for reader: {reader_row[2]}, pos: {reader_row[6]}/{reader_row[5]}, line: {line_string}")
                     else:
                         logger.warning(f"Empty line read from log file. File: {reader_row[3]}")
                 else:

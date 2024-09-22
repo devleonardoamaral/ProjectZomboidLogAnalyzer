@@ -37,7 +37,7 @@ class LoggerManager:
                 filename=log_path, 
                 mode="a",
                 maxBytes=1024 * 1024 * 10, # 10 MB
-                backupCount=1,
+                backupCount=2,
                 encoding='utf-8'
             )
             file_handler.setFormatter(logging.Formatter(

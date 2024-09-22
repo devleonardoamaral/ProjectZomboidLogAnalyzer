@@ -13,6 +13,9 @@ The application is an open-source tool developed to collect and process logs gen
 - **Dynamic Updates**: The application keeps track of the log reading position, ensuring that only new entries are processed, improving efficiency and reducing overhead.
 
 ## Changelog
+### 0.0.2 Pre-Alpha - Issue Fixes
+- **Fix**: Resolved the infinite softlock issue that occurred when none of the regex patterns matched the current line.
+- **Update**: Changed the default regex pattern to accept logs that do not end with a period.
 
 ### 0.0.1 pre-alpha - Initial Commit
 - **Feature**: Added logging with hierarchy.
