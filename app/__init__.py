@@ -1,27 +1,19 @@
-import os
-import re
-import time
 import logging
-from datetime import datetime, timedelta
 from .logger import LoggerManager
-from typing import Any, TypedDict
 
-LoggerManager.setup_logger('', True, True, 'console')
+LoggerManager.setup_logger('', True, True, 'console') # Configura o logger padrão
 
 logger = logging.getLogger('app')
 
-logger.info('Welcome to Zomboid Log Reader!')
-logger.info('Made with ♥ by Leonardo Amaral!')
-logger.info('-------------------------------')
+logger.info('Seja bem-vindo ao Project Zomboid Log Analyzer!')
+logger.info('Feito com ♥ por Leonardo Amaral!')
+logger.info('-------------------------------------------------')
 
 from .config import Config
-
-config = Config()
+Config() # Inicializa o singleton e carrega as configurações antes dos outros módulos
 
 from .database import Database
-
-Database.setup_database()
+Database().setup_database() # Carrega a database a partir do script SQL "app/database.sql"
 
 from .reader import Reader
-
-reader = Reader()
+reader = Reader() # Instância o Reader no escopo global do app
