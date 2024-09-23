@@ -101,15 +101,19 @@ class Config:
                 pattern_default = self.default_pattern_default
 
             path_zomboid = os.path.normpath(path_zomboid.format(user=os.environ.get('USER') or os.environ.get('USERNAME')))
-            logger.info(f'Diretório para a pasta Zomboid definida como: "{path_zomboid}"')
             if not os.path.exists(path_zomboid):
-                raise FileNotFoundError('O caminho para o diretório do Project Zomboid não encontrado.')
+                raise FileNotFoundError('Caminho para o diretório do Project Zomboid não encontrado.')
+            
+            path_zomboid_logs = os.path.join(path_zomboid, 'Logs')
+            logger.info(f'Diretório para a pasta "Logs" do Project Zomboid definida como: "{path_zomboid_logs}"')
+            if not os.path.exists(path_zomboid_logs):
+                raise FileNotFoundError('Caminho para a pasta "Logs" do Project Zomboid não encontrado.')
             
             path_database = path_database.format(app_path=get_root_dir())
             path_database = os.path.normpath(path_database)
             logger.info(f'Caminho para o arquivo da base de dados definido como: "{path_database}"')
             if not os.path.exists(os.path.dirname(path_database)):
-                raise FileNotFoundError('O caminho para o arquivo da base de dados não encontrado.')
+                raise FileNotFoundError('Caminho para o arquivo da base de dados não encontrado.')
 
             try:
                 self.app_reading_frequency = float(app_reading_frequency)
@@ -118,6 +122,7 @@ class Config:
                 raise error(f'Tipo inválido na configuração: {error}')
             
             self.path_zomboid = path_zomboid
+            self.path_zomboid_logs = path_zomboid_logs
             self.path_database = path_database
             self.pattern_default = pattern_default
 
