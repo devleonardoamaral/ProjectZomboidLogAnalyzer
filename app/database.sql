@@ -1,24 +1,24 @@
-CREATE TABLE IF NOT EXISTS readers (
+CREATE TABLE IF NOT EXISTS log_files (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE,
-    filename TEXT NOT NULL,
-    abspath TEXT NOT NULL,
-    pattern TEXT,
-    size INTEGER NOT NULL,
-    cursor_position INTEGER NOT NULL DEFAULT (0),
-    mtime INTEGER NOT NULL,
-    isoformat INTEGER EXT NOT NULL,
-    timestamp INTEGER EXT NOT NULL,
-    created_at INTEGER NOT NULL
+    patterns TEXT DEFAULT '{}',
+    log_date DATETIME NOT NULL,
+    log_type TEXT NOT NULL,
+    file_name TEXT NOT NULL,
+    file_path TEXT NOT NULL,
+    last_modified DATETIME NOT NULL,
+    creation_time DATETIME NOT NULL,
+    file_size INTEGER NOT NULL,
+    cursor_position INTEGER DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
 );
 
 CREATE TABLE IF NOT EXISTS logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    reader_id INTEGER REFERENCES readers (id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
-    pattern_id INTEGER NOT NULL,
-    data TEXT NOT NULL,
-    isoformat TEXT NOT NULL, 
-    timestamp INTEGER NOT NULL,
-    created_at INTEGER NOT NULL
+    pattern_name TEXT NOT NULL,
+    log_file_id INTEGER NOT NULL REFERENCES log_files (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    log_file_type TEXT NOT NULL REFERENCES log_files (log_type) ON DELETE CASCADE ON UPDATE CASCADE,
+    log_date DATETIME NOT NULL,
+    json_data TEXT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime')),
+    FOREIGN KEY (log_file_id) REFERENCES log_files (id)
 );
-
