@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS log_files (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    patterns TEXT DEFAULT '{}',
     log_date DATETIME NOT NULL,
     log_type TEXT NOT NULL,
     file_name TEXT NOT NULL,
@@ -11,31 +12,13 @@ CREATE TABLE IF NOT EXISTS log_files (
     created_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
 );
 
-CREATE TABLE IF NOT EXISTS patterns (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    pattern TEXT NOT NULL,
-    updated_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime')),
-    created_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime'))
-);
-
-CREATE TABLE IF NOT EXISTS log_files_patterns (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    pattern_id INTEGER NOT NULL,
-    log_file_id INTEGER NOT NULL,
-    updated_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime')),
-    created_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime')),
-    FOREIGN KEY (pattern_id) REFERENCES patterns (id),
-    FOREIGN KEY (log_file_id) REFERENCES log_files (id)
-);
-
 CREATE TABLE IF NOT EXISTS logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    pattern_id INTEGER NOT NULL,
-    log_file_id INTEGER NOT NULL,
-    log_file_type TEXT NOT NULL,
+    pattern_name TEXT NOT NULL,
+    log_file_id INTEGER NOT NULL REFERENCES log_files (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    log_file_type TEXT NOT NULL REFERENCES log_files (log_type) ON DELETE CASCADE ON UPDATE CASCADE,
     log_date DATETIME NOT NULL,
     json_data TEXT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT (datetime('now', 'localtime')),
-    FOREIGN KEY (pattern_id) REFERENCES patterns (id),
     FOREIGN KEY (log_file_id) REFERENCES log_files (id)
 );

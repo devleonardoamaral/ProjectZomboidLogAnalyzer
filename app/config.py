@@ -11,16 +11,6 @@ from .globals import get_root_dir
 
 logger = logging.getLogger('app.config')
 
-DEFAULT_CONFIG = """[path]
-zomboid=C:/Users/{user}/Zomboid
-database={app_path}/database.db
-[app]
-reading_frequency=1
-expiration_time=10
-[pattern]
-default=^\[(\d{2}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\](.+)\.?$
-"""
-
 class EmptyConfigurationError(ValueError):
     def __init__(self, message: str, *args: object) -> None:
         super().__init__(message, *args)
@@ -39,8 +29,8 @@ class Config:
             logger.info('Carregando configurações...')
 
             self._config = ConfigParser()
-            self.load_config()
             self.setup_default_values()
+            self.load_config()
             self.process_configs()
 
             self._initialized = True
@@ -53,8 +43,11 @@ class Config:
             logger.error(f'O arquivo de configuração "{config_file}" não foi encontrado.')
 
             try:
-                with open(config_file, 'w', encoding='utf-8') as f:
-                    f.write(DEFAULT_CONFIG)
+                with open(config_file, 'w', encoding='utf-8') as f1:
+                    with open(os.path.join(self.ROOT_DIR, 'app', 'config'), 'rb') as f2:
+                        content = f2.read().decode(encoding='utf-8')
+                        normalized_content = content.replace('\r\n', '\n').replace('\r', '\n')
+                        f1.write(normalized_content)
                     logger.critical(f'Um novo arquivo de configuração foi gerado no diretório "{self.ROOT_DIR}". Preencha-o corretamente e inicie a aplicação novamente.')
                     sys.exit()
                 
@@ -76,7 +69,7 @@ class Config:
     def setup_default_values(self) -> None:
         self.default_reading_frequency = 10
         self.default_expiration_time = 0
-        self.default_pattern_default = [r'^\[(\d{2}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\](.+)\.?$']
+        self.default_pattern = {}
     
     def process_configs(self) -> None:
         try:
@@ -84,7 +77,21 @@ class Config:
             path_database = self._config.get('path', 'database', fallback=None)
             app_reading_frequency = self._config.get('app', 'reading_frequency', fallback=None)
             app_expiration_time = self._config.get('app', 'expiration_time', fallback=None)
-            pattern_default = self._config.get('pattern', 'default', fallback=None)
+            default_pattern = self._config.get('default', 'pattern', fallback=None)
+
+            patterns = {}
+            if 'patterns' in self._config.sections():
+                for option_name, value in self._config.items('patterns'):
+                    option_name_split = option_name.split('__')
+
+                    if option_name_split[0] in patterns:
+                        patterns[option_name_split[0]][option_name_split[1]] = value
+                    else:
+                        patterns[option_name_split[0]] = {option_name_split[1]: value}
+                    
+                    logger.debug(f'Pattern carregado: log: {option_name_split[0]} name: {option_name_split[1]}: {value}')
+
+            self.patterns = patterns
 
             if path_zomboid is None:
                 raise EmptyConfigurationError('O caminho para o diretório do Project Zomboid não pôde ser carregado. Verifique o arquivo de configuração e tente novamente.')
@@ -96,9 +103,8 @@ class Config:
             if app_expiration_time is None:
                 logger.warning(f'O tempo de expiração dos logs no banco de dados não foi configurado corretamente. Os logs não serão removidos automaticamente.')
                 app_expiration_time = self.default_expiration_time
-            if pattern_default is None:
-                logger.warning(f'O pattern default não foi configurado corretamente. Utilizando o pattern padrão "{self.default_pattern_default}".')
-                pattern_default = self.default_pattern_default
+            if default_pattern is None:
+                raise EmptyConfigurationError(f'O pattern default não foi configurado corretamente.')
 
             path_zomboid = os.path.normpath(path_zomboid.format(user=os.environ.get('USER') or os.environ.get('USERNAME')))
             if not os.path.exists(path_zomboid):
@@ -124,7 +130,7 @@ class Config:
             self.path_zomboid = path_zomboid
             self.path_zomboid_logs = path_zomboid_logs
             self.path_database = path_database
-            self.pattern_default = pattern_default
+            self.default_pattern = {'default': default_pattern}
 
         except EmptyConfigurationError as error:
             logger.critical(f'Parece que você não definiu uma configuração obrigatória: {error}')

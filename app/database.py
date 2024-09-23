@@ -4,13 +4,15 @@
 # Modified: 23/09/2024
 
 import os
+import re
+import json
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import create_engine, Column, Integer, Text, func, DateTime, ForeignKey, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker, Session, declarative_base
 from contextlib import contextmanager
-from typing import Generator, Any
+from typing import Generator, Any, Union
 from .globals import get_root_dir
 from .config import Config
 
@@ -23,6 +25,7 @@ class LogFile(Base):
     __tablename__ = 'log_files'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    patterns = Column(Text, default='{}') 
     log_date = Column(DateTime, nullable=False)  # Data do nome do arquivo
     log_type = Column(Text, nullable=False)  # Tipo de log
     file_name = Column(Text, nullable=False)  # Nome completo do arquivo
@@ -40,9 +43,10 @@ class LogFile(Base):
         file_name: str,
         file_path: str,
         last_modified: datetime,
-        creation_time: datetime,
         file_size: int,
-        cursor_position: int = 0
+        creation_time: datetime,
+        cursor_position: int = 0,
+        patterns: Union[dict, str] = '{}'
     ) -> None:
     
         self.log_date = log_date
@@ -50,17 +54,35 @@ class LogFile(Base):
         self.file_name = file_name
         self.file_path = file_path
         self.last_modified = last_modified
-        self.creation_time = creation_time
         self.file_size = file_size
+        self.creation_time = creation_time
         self.cursor_position = cursor_position
+        self.set_patterns(patterns)
 
-    def has_changed(self, log_file: 'LogFile') -> bool:
+    def set_patterns(self, patterns: Union[dict, str]) -> None:
+        if isinstance(patterns, dict):
+            try:
+                self.patterns = json.dumps(patterns)
+            except Exception as error:
+                logger.exception(f'Erro ao serializar pattern para JSON: {error}')
+                self.patterns = '{}'
+        else:
+            self.patterns = patterns if isinstance(patterns, str) and re.match(r'^\{.*\}$', patterns) else '{}'
+
+    def get_patterns(self) -> dict:
+        try:
+            return json.loads(self.patterns) if self.patterns else {}
+        except json.JSONDecodeError as error:
+            logger.exception(f'Erro ao desserializar pattern do JSON: {error}')
+            return {}
+
+    def has_changed(self, log_file: 'LogFile', time_tolerance: int = 1) -> bool:
         """Compara se houve mudanças em relação a outro LogFile."""
-        return self.log_date != log_file.log_date or \
+        return (log_file.log_date - self.log_date > timedelta(seconds=time_tolerance)) or \
                self.file_name != log_file.file_name or \
                self.file_path != log_file.file_path or \
-               self.last_modified != log_file.last_modified or \
-               self.creation_time != log_file.creation_time or \
+               (log_file.last_modified - self.last_modified > timedelta(seconds=time_tolerance)) or \
+               (log_file.creation_time - self.creation_time > timedelta(seconds=time_tolerance)) or \
                self.file_size != log_file.file_size or \
                self.cursor_position != log_file.cursor_position
     
@@ -68,66 +90,49 @@ class LogFile(Base):
         """Verifica se o LogFile atual é mais antigo que o fornecido."""
         return self.log_date < log_file.log_date
     
-    def to_dict(self) -> dict:
+    def to_dict(self, isoformat: bool = False) -> dict:
         return {
             'id': self.id,
-            'log_date': self.log_date,
+            'log_date': self.log_date if not isoformat else self.log_date.isoformat(),
             'log_type': self.log_type,
             'file_name': self.file_name,
             'file_path': self.file_path,
-            'last_modified': self.last_modified,
-            'creation_time': self.creation_time,
+            'last_modified': self.last_modified if not isoformat else self.last_modified.isoformat(),
+            'creation_time': self.creation_time if not isoformat else self.creation_time.isoformat(),
             'file_size': self.file_size,
             'cursor_position': self.cursor_position,
-            'created_at': self.created_at
+            'created_at': self.created_at if not isoformat else self.created_at.isoformat()
         }
     
-    def update_from_dict(self, data: dict) -> None:
-        for key, value in data.items():
-            if key in self.__dict__.keys():
-                self.__setattr__(key, value)
-
-    @classmethod
-    def from_dict(cls, data: dict) -> 'LogFile':
-        return cls(
-            id=data.get('id'),
-            log_date=data['log_date'],
-            log_type=data['log_type'],
-            file_name=data['file_name'],
-            file_path=data['file_path'],
-            last_modified=data['last_modified'],
-            creation_time=data['creation_time'],
-            file_size=data['file_size'],
-            cursor_position=data.get('cursor_position', 0)
-        )
-
-class Pattern(Base):
-    __tablename__ = 'patterns'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    pattern = Column(Text, nullable=False)
-    updated_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
-    created_at = Column(DateTime, nullable=False, default=func.now())
-
-class LogFilePatterns(Base):
-    __tablename__ = 'log_files_patterns'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    pattern_id = Column(Integer, ForeignKey('patterns.id'), nullable=False)  # Referência à tabela patterns
-    log_file_id = Column(Integer, ForeignKey('log_files.id'), nullable=False)  # Referência à tabela log_files
-    updated_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
-    created_at = Column(DateTime, nullable=False, default=func.now())
-
+    def __str__(self) -> str:
+        try:
+            return json.dumps(self.to_dict(isoformat=True))
+        except Exception:
+            return super().__str__()
 class Log(Base):
     __tablename__ = 'logs'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    pattern_id = Column(Integer, ForeignKey('patterns.id'), nullable=False)  # Referência à tabela patterns
+    pattern_name = Column(Text, nullable=False)
     log_file_id = Column(Integer, ForeignKey('log_files.id'), nullable=False)  # Referência à tabela log_files
     log_file_type = Column(Text, nullable=False)  # Tipo do arquivo de log
     log_date = Column(DateTime, nullable=False)  # Data estampada na linha do log
     json_data = Column(Text, nullable=False)  # Dados do log processados em JSON
     created_at = Column(DateTime, nullable=False, default=func.now())  # Data de registro na DB
+
+    def __init__(
+        self, 
+        pattern_name: str,
+        log_file_id: int,
+        log_file_type: str,
+        log_date: datetime,
+        json_data: str
+    ) -> None:
+        self.pattern_name = pattern_name
+        self.log_file_id = log_file_id
+        self.log_file_type = log_file_type
+        self.log_date = log_date
+        self.json_data = json_data
 
 class Database:
     _instance = None

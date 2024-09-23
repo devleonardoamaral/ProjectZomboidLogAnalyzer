@@ -1,0 +1,50 @@
+[path]
+# Define o caminho para o diretório do Project Zomboid.
+# O aplicativo irá procurar os arquivos de log na pasta 'Logs' dentro deste diretório.
+# {user} será substituído pelo nome do usuário logado no sistema operacional durante a execução;
+# este é um placeholder opcional.
+# Exemplo: Se o usuário logado for 'joao', o caminho resultante será 'C:/Users/joao/Zomboid'.
+zomboid=C:/Users/{user}/Zomboid
+
+# Define o caminho e o nome do arquivo do banco de dados.
+# {app_path} representa o diretório onde o arquivo da aplicação está sendo executado.
+# O arquivo do banco de dados será nomeado como 'database.db'.
+# Exemplo: Se a aplicação estiver sendo executada em 'C:/MeuProjeto', o caminho resultante será 'C:/MeuProjeto/database.db'.
+database={app_path}/database.db
+
+[app]
+# Frequência de leitura dos logs em segundos.
+# Define a cada quantos segundos o aplicativo irá ler os logs.
+# ATENÇÃO: Definir reading_frequency como 0 pode levar a um uso excessivo de recursos.
+reading_frequency=1
+
+# Tempo de expiração para logs em segundos.
+# Define o tempo após o qual os logs serão considerados obsoletos e removidos.
+# ATENÇÃO: Definir expiration_time como 0 ou menor desativará a expiração automática dos logs.
+expiration_time=60
+
+[default]
+# Padrão de regex para correspondência de logs.
+# Este padrão é utilizado para capturar mensagens de log padrão.
+default=^\[(?P<datetime>\d{2}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\](?P<message>.+)$
+
+[patterns] 
+# Seção opcional para definir padrões de regex para logs específicos.
+# A sintaxe a ser utilizada é:
+#
+# <nome_do_arquivo_de_log>__<nome_da_chave_do_dicionário>=<regex_no_formato_python>
+#
+# É obrigatório nomear os grupos de captura, pois o resultado JSON do banco de dados será um dicionário
+# utilizando essas capturas nomeadas. Todas as capturas não nomeadas serão ignoradas no JSON resultante.
+#
+# Para nomear os grupos, utilize o seguinte padrão: (?P<nome>), sendo 'nome' o identificador desejado.
+# Para entender melhor como criar regex em Python consulte:
+# - https://www.w3schools.com/python/python_regex.asp
+# - https://docs.python.org/3/library/re.html
+# - https://docs.python.org/3/howto/regex.html
+
+# Padrão para logs de conexão de usuários.
+user__fully connected=^\[(?P<datetime>\d{2}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\] (?P<steamid>\d{17}) "([\w\s]+)" fully connected \((?P<coordx>\d+),(?P<coordy>\d+),(?P<coordz>\d+)\)\.$
+
+# Padrão para logs de desconexão de usuários.
+user__disconnected player=^\[(?P<datetime>\d{2}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\] (?P<steamid>\d{17}) "([\w\s]+)" disconnected player \((?P<coordx>\d+),(?P<coordy>\d+),(?P<coordz>\d+)\)\.$
