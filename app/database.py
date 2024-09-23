@@ -139,7 +139,7 @@ class Database:
     
     def __init__(self) -> None:
         if not hasattr(self, '_already_initialized'):
-            self.engine = create_engine(f'sqlite:///{config.path_database}', echo=True)
+            self.engine = create_engine(f'sqlite:///{config.path_database}')
             self._already_initialized = True
 
     def setup_database(self) -> None:
