@@ -10,6 +10,7 @@ import json
 import logging
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
+from typing import Optional
 from .config import Config
 from .database import Database, LogFile, LogFilePatterns, Log, Pattern
 
@@ -95,10 +96,51 @@ class Reader:
         finally:
             logger.debug('Verificação e atualização dos logfiles da database concluída.')
 
+    def _read_log(self, path: str, seek: int, encoding: str = 'utf-8') -> tuple[Optional[str], int]:
+        try:
+            with open(path, 'rb') as f:
+                f.seek(seek)
+                line_bytes = f.readline()
+                return line_bytes.decode(encoding=encoding, errors='ignore'), seek + len(line_bytes)
+            
+        except UnicodeDecodeError as error:
+            logger.exception(f'Erro ao tentar decodificar linha lida a partir do arquivo de log "{path}" com a posição do cursor iniciando em {seek}: {error}')
+            return None, seek
+        except PermissionError as error:
+            logger.exception(f'Permissões insuficientes para ler arquivo de log: {error}')
+            return None, seek
+        except FileNotFoundError as error:
+            logger.exception(f'Arquivo de log não encontrado: {error}')
+            return None, seek
+        except Exception as error:
+            logger.exception(f'Erro ao ler arquivo de log: {error}')
+            return None, seek
+            
+
     def read_logs(self, db: Session) -> None:
         logger.debug('Iniciando leitura dos arquivos de log.')
-        # Lógica de leitura
-        logger.debug('Leitura dos arquivos de log concluída.')
+        try:
+            db_logfiles = db.query(LogFile).all()
+
+            if not db_logfiles:
+                logger.info('Nenhum logfile encontrado para leitura.')
+                return
+
+            for db_logfile in db_logfiles:
+                log_line, new_cursor_position = self._read_log(db_logfile.file_path, db_logfile.cursor_position)
+
+                if log_line is not None:
+                    logger.debug(f'Linha lida do logfile {db_logfile.log_type}, pos {db_logfile.cursor_position}/{db_logfile.file_size}: {log_line}')
+                    db_logfile.cursor_position = new_cursor_position
+                    # Continua...
+                    pass
+
+            db.commit()
+        except Exception as error:
+            logger.exception(f'Erro ao ler arquivos de log: {error}')
+            db.rollback()
+        finally:
+            logger.debug('Leitura dos arquivos de log concluída.')
 
     def run_mainloop(self) -> None:
         logger.debug('Looping principal iniciado.')
