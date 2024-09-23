@@ -26,7 +26,7 @@ expiration_time=60
 [default]
 # Padrão de regex para correspondência de logs.
 # Este padrão é utilizado para capturar mensagens de log padrão.
-default=^\[(?P<datetime>\d{2}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\](?P<message>.+)$
+pattern=^\[(?P<datetime>\d{2}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\](?P<message>.+)$
 
 [patterns] 
 # Seção opcional para definir padrões de regex para logs específicos.
