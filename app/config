@@ -1,20 +1,20 @@
 [path]
 # Define o caminho para o diretório do Project Zomboid.
-# O aplicativo irá procurar os arquivos de log na pasta 'Logs' dentro deste diretório.
+# O script irá procurar os arquivos de log na pasta 'Logs' dentro deste diretório.
 # {user} será substituído pelo nome do usuário logado no sistema operacional durante a execução;
 # este é um placeholder opcional.
 # Exemplo: Se o usuário logado for 'joao', o caminho resultante será 'C:/Users/joao/Zomboid'.
 zomboid=C:/Users/{user}/Zomboid
 
 # Define o caminho e o nome do arquivo do banco de dados.
-# {app_path} representa o diretório onde o arquivo da aplicação está sendo executado.
+# {app_path} representa o diretório raiz de onde o script está sendo executado, onde se encontra o arquivo main.py.
 # O arquivo do banco de dados será nomeado como 'database.db'.
-# Exemplo: Se a aplicação estiver sendo executada em 'C:/MeuProjeto', o caminho resultante será 'C:/MeuProjeto/database.db'.
+# Exemplo: Se a script estiver sendo executado em 'C:/MeuProjeto', o caminho resultante será 'C:/MeuProjeto/database.db'.
 database={app_path}/database.db
 
 [app]
 # Frequência de leitura dos logs em segundos.
-# Define a cada quantos segundos o aplicativo irá ler os logs.
+# Define a cada quantos segundos o script irá ler os logs.
 # ATENÇÃO: Definir reading_frequency como 0 pode levar a um uso excessivo de recursos.
 reading_frequency=1
 
