@@ -14,7 +14,7 @@ database={app_path}/database.db
 
 [app]
 # Frequência de leitura dos logs em segundos.
-# Define a cada quantos segundos o script irá ler os logs.
+# Define a cada quantos segundos o script irá ler os logs, suporta números float ex. 0.1.
 # ATENÇÃO: Definir reading_frequency como 0 pode levar a um uso excessivo de recursos.
 reading_frequency=1
 
