@@ -1,18 +1,16 @@
 # Project Zomboid Log Analyzer
 
-A aplicação é uma ferramenta open-source desenvolvida para coletar e processar logs gerados pelo jogo **Project Zomboid**, permitindo que jogadores e administradores analisem eventos significativos registrados durante as sessões de jogo. Utilizando expressões regulares (regex), a aplicação filtra entradas de log para extrair informações relevantes, transformando dados brutos em insights úteis.
+**Project Zomboid Log Analyzer** é uma ferramenta open-source desenvolvida para coletar, processar e analisar logs gerados pelo jogo Project Zomboid, voltada tanto para jogadores quanto para administradores de servidores. O objetivo é facilitar a extração de informações relevantes dos logs do jogo, transformando dados brutos em insights valiosos.
 
-### Principais Funcionalidades:
+### Funcionalidades:
 
-- **Leitura de Logs**: A aplicação acessa arquivos de log gerados pelo Project Zomboid, permitindo a leitura sequencial e o processamento de novas entradas à medida que são adicionadas.
+- **Leitura de Logs**: A script acessa arquivos de log gerados pelo Project Zomboid, permitindo a leitura sequencial e o processamento de novas entradas à medida que são adicionadas.
 
 - **Filtragem por Regex**: Implementa um sistema de regex personalizável que permite aos usuários definir padrões específicos para capturar informações desejadas, como eventos de morte, interações de jogadores e mudanças de estado do jogo.
 
-- **Armazenamento em Banco de Dados SQLite**: Dados filtrados são armazenados em um banco de dados SQLite, facilitando consultas e análises subsequentes. O uso do SQLite garante que a aplicação seja leve e fácil de configurar, sem a necessidade de servidores complexos.
+- **Armazenamento em Banco de Dados SQLite**: Dados filtrados são armazenados em um banco de dados SQLite, facilitando consultas e análises subsequentes. O uso do SQLite garante que a script seja leve e fácil de configurar, sem a necessidade de servidores complexos.
 
-- **Atualizações Dinâmicas**: A aplicação rastreia a posição de leitura dos logs, garantindo que apenas novas entradas sejam processadas, melhorando a eficiência e reduzindo a sobrecarga.
-
-Claro! Aqui está uma versão aprimorada da seção de instalação e uma adição sobre como criar um script para automatizar a execução da aplicação.
+- **Atualizações Dinâmicas**: A script rastreia a posição de leitura dos logs, garantindo que apenas novas entradas sejam processadas, melhorando a eficiência e reduzindo a sobrecarga.
 
 ## Como instalar e executar
 
@@ -23,7 +21,7 @@ Claro! Aqui está uma versão aprimorada da seção de instalação e uma adiç�
 
 ### Passos para Instalação
 
-2. **Abra o terminal** (Prompt de Comando no Windows ou Terminal no Linux) e navegue até o diretório raiz do aplicativo onde se encontra o arquivo `main.py`.
+2. **Abra o terminal** (Prompt de Comando no Windows ou Terminal no Linux) e navegue até o diretório raiz do script onde se encontra o arquivo `main.py`.
 
 3. **Crie um ambiente virtual:**
    - Windows e Linux:
@@ -47,9 +45,9 @@ Claro! Aqui está uma versão aprimorada da seção de instalação e uma adiç�
    pip install -r requirements.txt
    ```
 
-### Como Executar o Aplicativo
+### Como Executar o Script
 
-6. **Execute o aplicativo:**
+6. **Execute o script:**
    - Windows:
    ```bash
    .\venv\Scripts\python -m main.py
@@ -61,11 +59,11 @@ Claro! Aqui está uma versão aprimorada da seção de instalação e uma adiç�
 
 ### Criando um Script para Automatizar a Execução
 
-Para simplificar a execução do seu aplicativo, você pode criar um script que automatiza o processo de ativação do ambiente virtual e execução do aplicativo. 
+Para simplificar a execução do seu script, você pode criar um script que automatiza o processo de ativação do ambiente virtual e execução do script. 
 
 #### Windows
 
-1. **Crie um arquivo chamado `run.bat`** no diretório raiz do seu aplicativo com o seguinte conteúdo:
+1. **Crie um arquivo chamado `run.bat`** no diretório raiz do seu script com o seguinte conteúdo:
 
    ```bat
    @echo off
@@ -74,11 +72,11 @@ Para simplificar a execução do seu aplicativo, você pode criar um script que 
    pause
    ```
 
-   - O comando `pause` é opcional, mas ele permite que você veja a saída do aplicativo antes de fechar o terminal.
+   - O comando `pause` é opcional, mas ele permite que você veja a saída do script antes de fechar o terminal.
 
 #### Linux
 
-1. **Crie um arquivo chamado `run.sh`** no diretório raiz do seu aplicativo com o seguinte conteúdo:
+1. **Crie um arquivo chamado `run.sh`** no diretório raiz do seu script com o seguinte conteúdo:
 
    ```bash
    #!/bin/bash
@@ -103,7 +101,7 @@ Para simplificar a execução do seu aplicativo, você pode criar um script que 
 
 ### Observações Adicionais
 
-- **Desativar o ambiente virtual**: Após terminar a execução do aplicativo, você pode desativar o ambiente virtual utilizando o comando:
+- **Desativar o ambiente virtual**: Após terminar a execução do script, você pode desativar o ambiente virtual utilizando o comando:
    ```bash
    deactivate
    ```
@@ -114,7 +112,7 @@ Para simplificar a execução do seu aplicativo, você pode criar um script que 
 
 ### Estrutura do Arquivo `config.ini`
 
-O arquivo `config.ini` é dividido em seções que definem caminhos, configurações de aplicativo e padrões de regex para captura de logs.
+O arquivo `config.ini` é dividido em seções que definem caminhos, configurações de script e padrões de regex para captura de logs.
 
 ### [path]
 
@@ -136,11 +134,11 @@ A seção `[path]` define os caminhos relevantes para o diretório do Project Zo
     ```ini
     database={app_path}/database.db
     ```
-  - **Observação**: `{app_path}` representa o diretório onde o arquivo da aplicação está sendo executado. O arquivo do banco de dados será nomeado como `database.db`.
+  - **Observação**: `{app_path}` representa o diretório onde o arquivo da script está sendo executado. O arquivo do banco de dados será nomeado como `database.db`.
 
 ### [app]
 
-A seção `[app]` contém configurações específicas do aplicativo.
+A seção `[app]` contém configurações específicas do script.
 
 #### Campos
 
