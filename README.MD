@@ -20,7 +20,7 @@
 ### Requisitos
 
 #### Python 3.12.X ou mais recente
-Faça o download do instalador do Python 3.12.x através da página oficial do [**Python**](https://www.python.org/downloads/) ou da [**Microsoft Store**](https://www.microsoft.com/store/productId/9NCVDN91XZQP?ocid=pdpshare).
+Faça o download do instalador do Python 3.12.x através da [**Página de Download do Python**](https://www.python.org/downloads/) ou da [**Microsoft Store**](https://www.microsoft.com/store/productId/9NCVDN91XZQP?ocid=pdpshare).
 
 #### Bibliotecas Python necessárias
 ##### SQLAlchemy 2.0.35
