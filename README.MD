@@ -68,6 +68,19 @@ pip install -r requirements.txt
 ### Como Executar o Script
 
 #### Execute o script
+
+Após a primeira execução do script, será gerado automaticamente um arquivo de configuração chamado `config.ini` no mesmo diretório onde o arquivo `main.py` está localizado. 
+
+Antes de continuar utilizando a ferramenta, é necessário configurar esse arquivo. O `config.ini` oferece diversas opções que permitem customizar e ajustar a execução do script, como:
+
+- Diretório de logs
+- Filtros de eventos específicos
+- Frequência de leitura dos logs
+- Tempo de expiração dos logs armazenados
+- Configurações de conexão com o banco de dados SQLite
+
+Edite o `config.ini` conforme suas necessidades, e, em seguida, execute o script para começar a coletar e processar os logs de **Project Zomboid** de acordo com as configurações ajustadas.
+
 ##### Windows:
 ```bash
 .\venv\Scripts\python -m main.py
