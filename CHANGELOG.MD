@@ -5,7 +5,7 @@
 - **Suporte a ORM**: Adicionado suporte ao SQLAlchemy ORM, facilitando a interação com o banco de dados.
 - **Segurança Aprimorada**: Implementado um sistema de segurança que garante a integridade das operações, mesmo em caso de interrupção por KeyboardInterrupt.
 - **Configurações Específicas**: Introduzidas configurações de regex específicas para cada tipo de log através do arquivo de configuração `config.ini`, permitindo maior flexibilidade na filtragem de logs.
-- **Correções de Bugs**: Resolução de diversos bugs resultantes da reestruturação significativa do código, melhorando a estabilidade da aplicação.
+- **Correções de Bugs**: Resolução de diversos bugs resultantes da reestruturação significativa do código, melhorando a estabilidade da script.
 
 ### 0.0.2 Pre-alpha - Correções de Problemas
 - **Correção**: Resolvido o problema de softlock infinito que ocorria quando nenhum dos padrões regex correspondia à linha atual.
@@ -13,9 +13,9 @@
 
 ### 0.0.1 Pre-alpha - Compromisso Inicial
 - **Funcionalidade**: Adicionada a hierarquia de logs para melhor organização das mensagens.
-- **Funcionalidade**: Introduzido um singleton `Config` para gerenciar configurações globais da aplicação.
+- **Funcionalidade**: Introduzido um singleton `Config` para gerenciar configurações globais da script.
 - **Funcionalidade**: Implementada a leitura de logs do **Project Zomboid**, permitindo o processamento sequencial de novas entradas.
 - **Funcionalidade**: Adicionado filtro regex personalizável para capturar eventos específicos de log, como interações de jogadores e mudanças de estado.
 - **Funcionalidade**: Integrado o armazenamento em banco de dados SQLite para os dados filtrados dos logs, facilitando consultas e análises.
 - **Funcionalidade**: Implementada atualização dinâmica para rastrear a posição de leitura dos logs, garantindo que apenas novas entradas sejam processadas.
-- **Informação**: A aplicação é de código aberto, promovendo colaboração e contribuições da comunidade. 
+- **Informação**: A script é de código aberto, promovendo colaboração e contribuições da comunidade. 
